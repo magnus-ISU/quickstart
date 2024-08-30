@@ -42,6 +42,50 @@ cat <<"!" >src-tauri/rustfmt.toml
 hard_tabs=true
 !
 
+cat <<"!" >src/routes/+page.svelte
+<script lang="ts">
+	import App from "$lib/App.svelte"
+</script>
+
+<App />
+!
+
+cat <<"!" >src/lib/App.svelte
+<script lang="ts">
+	import { invoke } from '@tauri-apps/api/tauri'
+
+	let name = ''
+	let greetMsg = ''
+
+	async function greet() {
+		greetMsg = await invoke('greet', { name })
+	}
+</script>
+
+<div>
+	<input id="greet-input" placeholder="Enter a name..." bind:value="{name}" />
+	<button on:click="{greet}">Greet</button>
+	<p>{greetMsg}</p>
+</div>
+!
+
+cat <<"!" >src-tauri/src/main.rs
+// Prevents additional console window on Windows in release, DO NOT REMOVE!!
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
+fn main() {
+	tauri::Builder::default()
+		.invoke_handler(tauri::generate_handler![greet])
+		.run(tauri::generate_context!())
+		.expect("error while running tauri application");
+}
+
+#[tauri::command]
+fn greet(name: &str) -> String {
+	format!("Hello, {}!", name)
+}
+!
+
 git init .
 git add .
 git commit -m "x"
