@@ -23,6 +23,8 @@ bun run build
 !
 cargo tauri init --app-name "$appname" --window-title "$appname" --dev-path http://localhost:5173 --dist-dir ../build --before-dev-command 'bun run dev' --before-build-command 'bun run build'
 
+bun add @tauri-apps/api
+
 # cargo tauri dev # To fix dependencies? No
 # bun install @tauri-apps/cli@next
 # bun run tauri migrate
